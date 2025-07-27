@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   scope :api do
     namespace :v1 do
+      resources :authors, only: %i[index]
       resources :books, only: %i[index]
     end
   end
