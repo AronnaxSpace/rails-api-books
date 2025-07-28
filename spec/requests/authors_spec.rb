@@ -16,4 +16,25 @@ describe 'Author', type: :request do
       expect(json_body['data'].size).to eq 3
     end
   end
+
+  describe 'GET /api/v1/authors/:id' do
+    let(:author) { create(:author) }
+
+    before { get "/api/v1/authors/#{author.id}" }
+
+    it 'gets HTTP status 200' do
+      expect(response.status).to eq 200
+    end
+
+    it 'receives a json with the "data" root key' do
+      expect(json_body['data']).to_not be nil
+    end
+
+    it 'receives the author details' do
+      expect(json_body['data'].deep_symbolize_keys).to include(
+        id: author.id,
+        name: author.name
+      )
+    end
+  end
 end
