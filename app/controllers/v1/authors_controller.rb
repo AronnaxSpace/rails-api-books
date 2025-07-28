@@ -7,14 +7,16 @@ module V1
     end
 
     def show
-      render json: { data: AuthorPresenter.present(author) }
+      include_books = ActiveModel::Type::Boolean.new.cast(params[:include_books])
+
+      render json: { data: AuthorPresenter.new(author, include_books: include_books).as_json }
     end
 
     def create
       author = Author.new(author_params)
 
       if author.save
-        render json: { data: AuthorPresenter.present(author) }, status: :created
+        render json: { data: AuthorPresenter.new(author, include_books: true).as_json }, status: :created
       else
         render json: { errors: author.errors.full_messages }, status: :unprocessable_entity
       end
@@ -40,7 +42,7 @@ module V1
     end
 
     def author_params
-      params.require(:author).permit(:first_name, :last_name)
+      params.require(:author).permit(:first_name, :last_name, books_attributes: %i[title])
     end
   end
 end

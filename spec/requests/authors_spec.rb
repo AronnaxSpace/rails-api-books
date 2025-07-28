@@ -36,6 +36,18 @@ describe 'Author', type: :request do
         name: author.name
       )
     end
+
+    context 'when params[:include_books] is true' do
+      before do
+        create_list(:book, 2, author: author)
+
+        get "/api/v1/authors/#{author.id}?include_books=true"
+      end
+
+      it 'includes the author\'s books' do
+        expect(json_body['data']['books'].size).to eq 2
+      end
+    end
   end
 
   describe 'POST /api/v1/authors' do
@@ -53,6 +65,20 @@ describe 'Author', type: :request do
 
     it 'creates a new author' do
       expect(Author.last.name).to eq "#{author_params[:first_name]} #{author_params[:last_name]}"
+    end
+
+    context 'when nested attributes are provided' do
+      let(:book_params) { attributes_for(:book) }
+      let(:author_with_books_params) do
+        author_params.merge(books_attributes: [ book_params ])
+      end
+
+      before { post '/api/v1/authors', params: { author: author_with_books_params } }
+
+      it 'creates the author with associated books' do
+        expect(Author.last.books.count).to eq 1
+        expect(Author.last.books.first.title).to eq book_params[:title]
+      end
     end
   end
 
