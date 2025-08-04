@@ -8,15 +8,16 @@ module V1
 
     def show
       include_books = ActiveModel::Type::Boolean.new.cast(params[:include_books])
+      attributes_to_exclude = include_books ? [] : [ :books ]
 
-      render json: { data: AuthorPresenter.new(author, include_books: include_books).as_json }
+      render json: { data: AuthorPresenter.present(author, attributes_to_exclude: attributes_to_exclude) }.to_json
     end
 
     def create
       author = Author.new(author_params)
 
       if author.save
-        render json: { data: AuthorPresenter.new(author, include_books: true).as_json }, status: :created
+        render json: { data: AuthorPresenter.present(author) }, status: :created
       else
         render json: { errors: author.errors.full_messages }, status: :unprocessable_entity
       end

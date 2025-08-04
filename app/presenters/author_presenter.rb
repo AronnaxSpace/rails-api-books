@@ -1,18 +1,13 @@
 class AuthorPresenter < BasePresenter
-  def initialize(author, include_books: false)
-    @author = author
-    @include_books = include_books
-  end
-
-  def as_json
+  def as_json(attributes_to_exclude: [])
     {
-      id: @author.id,
-      name: @author.name,
-      created_at: @author.created_at,
-      updated_at: @author.updated_at
+      id: @object.id,
+      name: @object.name,
+      created_at: @object.created_at,
+      updated_at: @object.updated_at
     }.tap do |hash|
-      if @include_books
-        hash[:books] = BookPresenter.present(@author.books)
+      unless attributes_to_exclude.include?(:books)
+        hash[:books] = BookPresenter.present(@object.books, attributes_to_exclude: [ :author ])
       end
     end
   end

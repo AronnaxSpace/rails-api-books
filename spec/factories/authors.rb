@@ -5,11 +5,11 @@ FactoryBot.define do
 
     trait :with_books do
       transient do
-        books_count { 5 }
+        books_count { 3 }
       end
 
       after(:create) do |author, evaluator|
-        create_list(:book, evaluator.books_count, author: author)
+        create_list(:book, evaluator.books_count, :with_author, author: author)
       end
     end
   end

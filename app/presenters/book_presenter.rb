@@ -1,26 +1,22 @@
 class BookPresenter < BasePresenter
-  def initialize(book)
-    @book = book
-  end
-
-  def as_json
+  def as_json(attributes_to_exclude: [])
     {
-      id: @book.id,
-      title: @book.title,
+      id: @object.id,
+      title: @object.title,
       author: author_info,
-      created_at: @book.created_at,
-      updated_at: @book.updated_at
-    }
+      created_at: @object.created_at,
+      updated_at: @object.updated_at
+    }.except(*attributes_to_exclude)
   end
 
   private
 
   def author_info
-    return nil unless @book.author
+    return nil unless @object.author
 
     {
-      id: @book.author.id,
-      name: @book.author.name
+      id: @object.author.id,
+      name: @object.author.name
     }
   end
 end
